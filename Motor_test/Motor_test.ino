@@ -1,5 +1,7 @@
 
-// #include <encoder.h>
+#include "control_P.h"
+#include "control-PID.h"
+
 
 #define MOTOR_1_PIN 5
 #define MOTOR_2_PIN 6
@@ -8,11 +10,8 @@
 #define ENCODER_B_PIN 3
 
 #define MOTOR_MAX_VOTLAGE 5
-#define K_P 0.1
 
 volatile long encoderPosition = 0;
-
-
 int setpoint = 500;
 int error, control_action;
 unsigned long start_time;
@@ -20,6 +19,7 @@ int data = 0;
 
 void setup() {
     delay(500);
+
     pinMode(MOTOR_1_PIN, OUTPUT);
     pinMode(MOTOR_2_PIN, OUTPUT);
 
@@ -39,7 +39,9 @@ void loop() {
     Serial.println(getEncoderPosition());
 
     control_action = control_P(setpoint, getEncoderPosition());
+    // control_action = control_PID(setpoint, getEncoderPosition());
 
+    
     // error = setpoint - getEncoderPosition();
 
     // control_action = K_P * error;
@@ -59,19 +61,11 @@ void loop() {
     
 }
 
-float control_P(float r, float y) {
-    return K_P * (r - y);
-}
-
 long getEncoderPosition() {
     noInterrupts();
     long pos = encoderPosition;
     interrupts();
     return pos;
-}
-
-template <typename T> int sgn(T val) {
-    return (T(0) < val) - (val < T(0));
 }
 
 void handleEncoderA() {
@@ -88,4 +82,8 @@ void handleEncoderB() {
     } else {
         encoderPosition--;
     }
+}
+
+template <typename T> int sgn(T val) {
+    return (T(0) < val) - (val < T(0));
 }

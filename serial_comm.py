@@ -29,7 +29,11 @@ try:
     while(inst_time < runtime):
         inst_time = time.time() - start_time
         sp = float(setpoint(inst_time))
-        res = float(s.readline())
+        res = s.readline()
+        if res == b'\r\n':
+            res = 0.0
+        else:    
+            res = float(s.readline())
         
         data.append([inst_time, sp, res])
         # print(res)
@@ -62,7 +66,9 @@ try:
         
         for row in data:
             writer.writerow(row)
-                  
+            
+except serial.SerialException:        
+    pass
 except Exception as e:
     print("Error Occured: Closing")
     print(e)
