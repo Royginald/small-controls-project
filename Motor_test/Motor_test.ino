@@ -1,4 +1,6 @@
 
+// #include <encoder.h>
+
 #define MOTOR_1_PIN 5
 #define MOTOR_2_PIN 6
 
@@ -10,11 +12,14 @@
 
 volatile long encoderPosition = 0;
 
+
 int setpoint = 500;
 int error, control_action;
 unsigned long start_time;
+int data = 0;
 
 void setup() {
+    delay(500);
     pinMode(MOTOR_1_PIN, OUTPUT);
     pinMode(MOTOR_2_PIN, OUTPUT);
 
@@ -27,10 +32,17 @@ void setup() {
 }
 
 void loop() {
+    if (Serial.available() > 0) {
+        setpoint = Serial.read();
+    }
+
     Serial.println(getEncoderPosition());
-    
-    error = setpoint - getEncoderPosition();
-    control_action = K_P * error;
+
+    control_action = control_P(setpoint, getEncoderPosition());
+
+    // error = setpoint - getEncoderPosition();
+
+    // control_action = K_P * error;
 
     if (control_action > MOTOR_MAX_VOTLAGE) {
         control_action = MOTOR_MAX_VOTLAGE * sgn(control_action);
@@ -43,6 +55,19 @@ void loop() {
         analogWrite(MOTOR_1_PIN, 0);
         analogWrite(MOTOR_2_PIN, control_action/MOTOR_MAX_VOTLAGE*255);
     }
+
+    
+}
+
+float control_P(float r, float y) {
+    return K_P * (r - y);
+}
+
+long getEncoderPosition() {
+    noInterrupts();
+    long pos = encoderPosition;
+    interrupts();
+    return pos;
 }
 
 template <typename T> int sgn(T val) {
@@ -63,11 +88,4 @@ void handleEncoderB() {
     } else {
         encoderPosition--;
     }
-}
-
-long getEncoderPosition() {
-    noInterrupts();
-    long pos = encoderPosition;
-    interrupts();
-    return pos;
 }

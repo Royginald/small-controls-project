@@ -1,0 +1,74 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Mar 25 13:31:57 2025
+
+@author: rmcintos
+"""
+
+import serial
+import numpy as np
+import time
+import csv
+import matplotlib.pyplot as plt
+
+def setpoint(t):
+    return 50 * np.sin(5*t) + 900
+
+runtime = 3 # Seconds
+file_name = "motor_data.csv"
+
+# --------------- Main Program  --------------- 
+data = []
+
+try:
+    s = serial.Serial('COM4', 9600)
+    
+    print("Starting control")
+    inst_time = 0
+    start_time = time.time()
+    while(inst_time < runtime):
+        inst_time = time.time() - start_time
+        sp = float(setpoint(inst_time))
+        res = float(s.readline())
+        
+        data.append([inst_time, sp, res])
+        # print(res)
+        s.write(sp)
+        
+        
+    print("Data collection complete")
+    s.reset_input_buffer()
+    s.reset_output_buffer()
+    s.dtr = False
+    s.close()
+    
+    # --------------- Plot Data  --------------- 
+    
+    time  = [d[0] for d in data]
+    setpt = [d[1] for d in data]
+    resp  = [d[2] for d in data]
+    
+    plt.plot(time, setpt, label="Setpoint")
+    plt.plot(time, resp, label="Response")
+    plt.grid()
+    plt.legend()
+    
+    # --------------- Save Data  --------------- 
+    
+    print("Saving Data")
+    with open(file_name, "w", newline="\n") as file:
+        writer = csv.writer(file, delimiter=",")
+        writer.writerow(["Time", "Setpoint", "Position"])
+        
+        for row in data:
+            writer.writerow(row)
+                  
+except Exception as e:
+    print("Error Occured: Closing")
+    print(e)
+    
+    s.reset_input_buffer()
+    s.reset_output_buffer()
+    s.dtr = False
+    s.close()
+
