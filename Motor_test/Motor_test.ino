@@ -12,7 +12,7 @@
 #define MOTOR_MAX_VOTLAGE 5
 
 volatile long encoderPosition = 0;
-int setpoint = 500;
+int setpoint = 0;
 int error, control_action;
 unsigned long start_time;
 int data = 0;
@@ -26,14 +26,13 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(ENCODER_A_PIN), handleEncoderA, CHANGE);
     attachInterrupt(digitalPinToInterrupt(ENCODER_B_PIN), handleEncoderB, CHANGE);
 
+    Serial.setTimeout(1); //Milliseconds
     Serial.begin(9600);
-    start_time = millis();
-    delay(3000);
 }
 
 void loop() {
     if (Serial.available() > 0) {
-        setpoint = Serial.read();
+        setpoint = Serial.readString().toFloat();
     }
 
     Serial.println(getEncoderPosition());
@@ -41,10 +40,6 @@ void loop() {
     control_action = control_P(setpoint, getEncoderPosition());
     // control_action = control_PID(setpoint, getEncoderPosition());
 
-    
-    // error = setpoint - getEncoderPosition();
-
-    // control_action = K_P * error;
 
     if (control_action > MOTOR_MAX_VOTLAGE) {
         control_action = MOTOR_MAX_VOTLAGE * sgn(control_action);
@@ -57,8 +52,6 @@ void loop() {
         analogWrite(MOTOR_1_PIN, 0);
         analogWrite(MOTOR_2_PIN, control_action/MOTOR_MAX_VOTLAGE*255);
     }
-
-    
 }
 
 long getEncoderPosition() {
