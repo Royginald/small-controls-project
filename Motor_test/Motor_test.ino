@@ -9,13 +9,18 @@
 #define ENCODER_A_PIN 2
 #define ENCODER_B_PIN 3
 
-#define MOTOR_MAX_VOTLAGE 5
+#define MOTOR_MAX_VOLTAGE 12
+#define TIME_STEP 0.001
 
-volatile long encoderPosition = 0;
 int setpoint = 0;
 int error, control_action;
+
+volatile long encoderPosition = 0;
+long prev_encoder_pos = 0;
+float speed = 0;
+
 unsigned long start_time;
-int data = 0;
+long dt = 0;
 
 void setup() {
     delay(500);
@@ -28,6 +33,8 @@ void setup() {
 
     Serial.setTimeout(1); //Milliseconds
     Serial.begin(9600);
+    start_time = micros();
+
 }
 
 void loop() {
@@ -35,22 +42,33 @@ void loop() {
         setpoint = Serial.readString().toFloat();
     }
 
-    Serial.println(getEncoderPosition());
+    dt = (micros() - start_time);
 
-    control_action = control_P(setpoint, getEncoderPosition());
-    // control_action = control_PID(setpoint, getEncoderPosition());
+    if (dt > (TIME_STEP * 1000000)) {
+        start_time = micros();
+        speed = (getEncoderPosition() - prev_encoder_pos)*1000000.0/dt;
+        prev_encoder_pos = getEncoderPosition();
+
+        // Serial.println(getEncoderPosition());
+        Serial.println(speed);
+        // Serial.println(control_action);
+
+        // control_action = control_P(setpoint, getEncoderPosition());
+        // control_action = control_PID(setpoint, getEncoderPosition());
+        control_action = setpoint;
 
 
-    if (control_action > MOTOR_MAX_VOTLAGE) {
-        control_action = MOTOR_MAX_VOTLAGE * sgn(control_action);
-    }
+        if (abs(control_action) > MOTOR_MAX_VOLTAGE) {
+            control_action = MOTOR_MAX_VOLTAGE * sgn(control_action);
+        }
 
-    if (control_action > 0) {
-        analogWrite(MOTOR_1_PIN, control_action/MOTOR_MAX_VOTLAGE*255);
-        analogWrite(MOTOR_2_PIN, 0);
-    } else {
-        analogWrite(MOTOR_1_PIN, 0);
-        analogWrite(MOTOR_2_PIN, control_action/MOTOR_MAX_VOTLAGE*255);
+        if (control_action > 0) {
+            analogWrite(MOTOR_1_PIN, control_action*255/MOTOR_MAX_VOLTAGE);
+            analogWrite(MOTOR_2_PIN, 0);
+        } else {
+            analogWrite(MOTOR_1_PIN, 0);
+            analogWrite(MOTOR_2_PIN, -control_action*255/MOTOR_MAX_VOLTAGE);
+        }
     }
 }
 
