@@ -12,5 +12,6 @@ namespace PID_Control {
     float control_PID(float r, float y);
     void set_PID_control_gains(float new_K_p, float new_K_i, float new_K_d);
 }
+
 #endif
 

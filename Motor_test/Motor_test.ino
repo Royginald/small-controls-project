@@ -1,6 +1,8 @@
 
 #include "control_P.h"
-#include "control-PID.h"
+#include "control_PI.h"
+#include "control_PID.h"
+#include "setpoints.h"
 
 
 #define MOTOR_1_PIN 5
@@ -12,14 +14,14 @@
 #define MOTOR_MAX_VOLTAGE 12
 #define TIME_STEP 0.001
 
-int setpoint = 0;
+float setpoint = 0;
 int error, control_action;
 
 volatile long encoderPosition = 0;
 long prev_encoder_pos = 0;
 float speed = 0;
 
-unsigned long start_time;
+unsigned long loop_start_time, prog_start_time;
 long dt = 0;
 
 void setup() {
@@ -33,30 +35,33 @@ void setup() {
 
     Serial.setTimeout(1); //Milliseconds
     Serial.begin(9600);
-    start_time = micros();
-
+    
+    prog_start_time = micros();
+    loop_start_time = micros();
 }
 
 void loop() {
-    if (Serial.available() > 0) {
-        setpoint = Serial.readString().toFloat();
-    }
+    // if (Serial.available() > 0) {
+    //     setpoint = Serial.readString().toFloat();
+    // }
 
-    dt = (micros() - start_time);
+    setpoint = step(float((micros() - loop_start_time)/1000), 2500.0);
+
+    dt = (micros() - loop_start_time);
 
     if (dt > (TIME_STEP * 1000000)) {
-        start_time = micros();
+        loop_start_time = micros();
         speed = (getEncoderPosition() - prev_encoder_pos)*1000000.0/dt;
         prev_encoder_pos = getEncoderPosition();
 
-        // Serial.println(getEncoderPosition());
-        Serial.println(speed);
+        Serial.println(getEncoderPosition());
+        // Serial.println(speed);
         // Serial.println(control_action);
 
         // control_action = control_P(setpoint, getEncoderPosition());
+        control_action = control_PI(setpoint, getEncoderPosition());
         // control_action = control_PID(setpoint, getEncoderPosition());
-        control_action = setpoint;
-
+        // control_action = setpoint;
 
         if (abs(control_action) > MOTOR_MAX_VOLTAGE) {
             control_action = MOTOR_MAX_VOLTAGE * sgn(control_action);

@@ -20,7 +20,7 @@ def setpoint(t):
 runtime = 3 # Seconds
 time_step = 0.05 # Seconds
 port_number = 4
-file_name = "motor_data_" + str(setpoint(0)) +"_volts.csv"
+file_name = "motor_data.csv"
 
 # --------------- Main Program  --------------- 
 
