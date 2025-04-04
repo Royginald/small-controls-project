@@ -1,12 +1,13 @@
 
 #include "control_PID.h"
+#include "Motor_test.h"
 
 float control_PID(float r, float y) {
     float error = r - y;
 
-    PID_Control::error_sum += error;
+    PID_Control::error_sum += error * TIME_STEP;
 
-    float ctl_act = PID_Control::K_p * error + PID_Control::K_i * PID_Control::error_sum + PID_Control::K_d * (error - PID_Control::prev_error);
+    float ctl_act = PID_Control::K_p * error + PID_Control::K_i * PID_Control::error_sum + PID_Control::K_d * (error - PID_Control::prev_error) / TIME_STEP;
 
     PID_Control::prev_error = error;
 

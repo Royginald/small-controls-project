@@ -1,10 +1,12 @@
 
+
+
 #ifndef PI_VARS
 #define PI_VARS
 
 namespace PI_Control {
     float K_p = 0.8;
-    float K_i = 0.0005;
+    float K_i = 0.5;
  
     float error_sum = 0;
     float control_PI(float r, float y);
