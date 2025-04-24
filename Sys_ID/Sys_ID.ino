@@ -1,9 +1,9 @@
 
 // #include "Motor_test.h"
 #define TEST_VOLTAGE 6
-#define TEST_TIME 5
-#define NUM_DATA_POINTS 1000
-#define END_TOL 0.95
+#define TEST_TIME 5.
+#define NUM_DATA_POINTS 1500
+#define END_TOL 0.9
 
 #define MOTOR_1_PIN 5
 #define MOTOR_2_PIN 6
@@ -22,9 +22,10 @@ volatile long encoderPosition = 0;
 // float speed = 0;
 
 unsigned long loop_start_time, prog_start_time;
-long dt = TEST_TIME / NUM_DATA_POINTS;
+double dt = TEST_TIME / NUM_DATA_POINTS;
 long data[NUM_DATA_POINTS]; // Steps
 float data_diff[NUM_DATA_POINTS - 1]; // Steps per second
+float tau;
 
 int i = 0;
 
@@ -50,7 +51,11 @@ void loop() {
     // }
 
     // Collect data
+    Serial.println("Starting Test");
+    // Serial.println(String(dt));
     analogWrite(MOTOR_1_PIN, TEST_VOLTAGE*255/MOTOR_MAX_VOLTAGE);
+
+    i = 0;
 
     while(i < NUM_DATA_POINTS) {
         if (dt * 1000000 < (micros() - loop_start_time)) {
@@ -61,6 +66,8 @@ void loop() {
     }
 
     analogWrite(MOTOR_1_PIN, 0);
+    Serial.println("Test Finished");
+    Serial.println("Starting Processing");
 
     // Process data
     // Differentate
@@ -69,19 +76,27 @@ void loop() {
         data_diff[j] = ( data[j+1] - data[j] ) / dt;
     }
 
-    float end_value = data_diff[NUM_DATA_POINTS-1] * END_TOL;
+    float end_value = float(data_diff[NUM_DATA_POINTS-2]) * END_TOL;
 
-    i = NUM_DATA_POINTS-1;
-    while(data_diff[i] > end_value){
+    // Serial.println(data_diff[NUM_DATA_POINTS-2]);
+    // Serial.println(END_TOL);
+    // Serial.println(end_value);
+    // Serial.println(" ------------------ ");
+
+    i = NUM_DATA_POINTS-3;
+    while(data_diff[i] > end_value && i >= 0){
+        // Serial.println(data_diff[i]);
         i--;
     }
+
+    // Serial.println(i);
 
     float end_time = i * dt / END_TOL;
     int end_index = i / END_TOL;
 
     float average = 0;
 
-    for (int j = end_index; j < NUM_DATA_POINTS-1; j++) {
+    for (int j = end_index; j < NUM_DATA_POINTS-2; j++) {
         average += data_diff[j];
     }
 
@@ -92,16 +107,27 @@ void loop() {
     float rise_value = average * 0.63;
 
     i = end_index;
-    while(data_diff[i] > rise_value) {
+    while(data_diff[i] > rise_value && i >= 0) {
         i--;
     }
 
-    float tau = (dt) / (data_diff[i+1] - data_diff[i]) * (rise_value - data_diff[i]) + i * dt;
+    // float tau = (dt) / (data_diff[i+1] - data_diff[i]) * (rise_value - data_diff[i]) + i * dt;
+    tau = i * dt;
 
     Serial.println("Plant gain: " + String(K_p) + " steps/s / V");
-    Serial.println("Plant rise time: " + String(tau) + " seconds");
+    Serial.print("Plant rise time: ");
+    Serial.print(tau, 6);
+    Serial.println(" seconds");
+    // Serial.println(end_index);
+    // Serial.println(i);
 
-    delay(TEST_TIME);
+    // for (int j = 0; j < NUM_DATA_POINTS-1; j++) {
+    //     Serial.print(j * dt);
+    //     Serial.print(" ");
+    //     Serial.println(data_diff[j]);
+    // }
+
+    delay(TEST_TIME * 1000.);
 
 }
 
