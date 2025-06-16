@@ -41,7 +41,11 @@ void loop() {
         speed = (getEncoderPosition() - prev_encoder_pos)*1000000.0/dt;
         prev_encoder_pos = getEncoderPosition();
 
-        Serial.println(getEncoderPosition());
+        long send_pos = getEncoderPosition() % STEPS_PER_REVOLUTION; 
+        if (send_pos < 0)
+            send_pos += STEPS_PER_REVOLUTION;
+
+        Serial.println(int(float(send_pos) * 360. / STEPS_PER_REVOLUTION));
         // Serial.println(speed);
         // Serial.println(control_action);
 
@@ -69,6 +73,13 @@ long getEncoderPosition() {
     long pos = encoderPosition;
     interrupts();
     return pos;
+}
+
+void addEncoderPosition(long add) {
+    noInterrupts();
+    encoderPosition += add;
+    interrupts();
+    // return pos;
 }
 
 void handleEncoderA() {
