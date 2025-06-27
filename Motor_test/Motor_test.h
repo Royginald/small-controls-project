@@ -1,6 +1,7 @@
 #include "control_P.h"
 #include "control_PI.h"
 #include "control_PID.h"
+#include "control_MPC.h"
 #include "setpoints.h"
 
 
@@ -11,6 +12,6 @@
 #define ENCODER_A_PIN 2
 #define ENCODER_B_PIN 3
 
-#define MOTOR_MAX_VOLTAGE 12
+#define MOTOR_MAX_VOLTAGE 12.0
 #define TIME_STEP 0.001
 #define STEPS_PER_REVOLUTION 1320
