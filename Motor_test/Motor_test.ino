@@ -1,8 +1,9 @@
 
 #include "Motor_test.h"
+using namespace MPC_Control;
 
 float setpoint = 0;
-int error, control_action;
+float control_action;
 
 volatile long encoderPosition = 0;
 long prev_encoder_pos = 0;
@@ -45,14 +46,17 @@ void loop() {
         if (send_pos < 0)
             send_pos += STEPS_PER_REVOLUTION;
 
-        Serial.println(int(float(send_pos) * 360. / STEPS_PER_REVOLUTION));
+        // Serial.println(int(float(send_pos) * 360. / STEPS_PER_REVOLUTION));
+        // Serial.println(getEncoderPosition());
         // Serial.println(speed);
-        // Serial.println(control_action);
 
         // control_action = control_P(setpoint, getEncoderPosition());
-        control_action = control_PI(setpoint, getEncoderPosition());
+        // control_action = control_PI(setpoint, getEncoderPosition());
         // control_action = control_PID(setpoint, getEncoderPosition());
+        control_action = control_MPC(setpoint, getEncoderPosition());
         // control_action = setpoint;
+
+        Serial.println(control_action);
 
         if (abs(control_action) > MOTOR_MAX_VOLTAGE) {
             control_action = MOTOR_MAX_VOLTAGE * sgn(control_action);
