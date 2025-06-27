@@ -24,7 +24,7 @@ def setpoint(t):
     return 12
 
 
-port_number = 4
+port_number = 6
 file_name = "motor_data.csv"
 
 data = np.zeros((int(runtime/time_step), 3))
@@ -169,7 +169,9 @@ try:
                     
                     line.set_data(data[:, 0], data[:, 2])
                     ax.set(xlim=[data[0, 0], data[-1, 0] ])
-                    ax.set(ylim=[0, 360])
+                    # ax.set(ylim=[0, 360])
+                    # ax.set(ylim=[-5000, 5000])
+                    ax.set(ylim=[0,3000])
                     plt.draw()
                     plt.pause(0.01)
                     
