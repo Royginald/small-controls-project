@@ -9,12 +9,17 @@ namespace MPC_Control {
     const float maxU = 9.0f;    // max voltage threshold
     const float lambda = 1.1;   // move suppression lambda
 
+    // dynamic matrix:
+    extern const float p[N][nu];
+
     // manipulated dynamic matrix:
     extern const float ppp[nu][N];
 
     // state variables:
-    extern float y_hat[N];
-    extern float u_prev;
+    extern float y_hat[N];  // predictions of the state
+    extern float u_prev;    // previous control action
+    extern float E[N];      // error
+    extern float dU;        // change in control action
 
     // functions:
     float control_MPC(float setpoint, float y_meas);
