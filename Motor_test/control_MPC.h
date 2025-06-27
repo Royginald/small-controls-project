@@ -9,16 +9,16 @@ namespace MPC_Control {
     const int nu = 1;                        // control move window
     const float minU = -MOTOR_MAX_VOLTAGE;   // min voltage threshold 
     const float maxU =  MOTOR_MAX_VOLTAGE;   // max voltage threshold
-    const float lambda = 1.1;                // move suppression lambda
+    const float lambda = 0;                  // move suppression lambda, not implemented.
 
     // dynamic matrix:
-    const float p[N][nu] = {156.124735202492, 263.612481245330, 337.614948147096, 388.563687042082, 423.640544661371,
+    const float p[N] = {156.124735202492, 263.612481245330, 337.614948147096, 388.563687042082, 423.640544661371,
                                         447.790032305804, 464.416315076581, 475.863070504438, 483.743858509286, 489.169572369321, 
                                         492.905032690405, 495.476798207413, 497.247390666162, 498.466396689165, 499.305650057026, 
                                         499.883453777579, 500.281256339081, 500.555132868962, 500.743689607603, 500.873505929222};
 
     // manipulated dynamic matrix:
-    const float ppp[nu][N] = {0.0000377, 0.0000637, 0.0000815, 0.0000939, 0.0001023,
+    const float ppp[N] = {0.0000377, 0.0000637, 0.0000815, 0.0000939, 0.0001023,
                             0.0001082, 0.0001122, 0.0001149, 0.0001168, 0.0001182,
                             0.0001191, 0.0001197, 0.0001201, 0.0001204, 0.0001206, 
                             0.0001207, 0.0001208, 0.0001209, 0.0001210, 0.0001210};
@@ -31,8 +31,6 @@ namespace MPC_Control {
 
     // functions:
     float control_MPC(float setpoint, float y_meas);
-    // void print_Array(float arr[], int N);
-    // void MPC_init();
 
 }   // MPC_Control
 
