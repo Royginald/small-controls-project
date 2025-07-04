@@ -33,8 +33,8 @@ void loop() {
     //     setpoint = Serial.readString().toFloat();
     // }
 
-    // setpoint = step(float((micros() - loop_start_time)/1000), 3500.0);
-    setpoint = sine(float((micros() - prog_start_time)/1000), 0.01, 500.0) + 2000;
+    setpoint = step(float((micros() - prog_start_time)/1000), 1500.0);
+    // setpoint = sine(float((micros() - prog_start_time)/1000), 0.01, 500.0) + 2000;
     // setpoint = ramp(float((micros() - prog_start_time)/1000000), 50.0);
 
     dt = (micros() - loop_start_time);
@@ -54,17 +54,17 @@ void loop() {
 
         // control_action = control_P(setpoint, getEncoderPosition());
         // control_action = control_PI(setpoint, getEncoderPosition());
-        // control_action = control_PID(setpoint, getEncoderPosition());
-        control_action = control_MPC(setpoint, speed);
+        control_action = control_PID(setpoint, getEncoderPosition());
+        // control_action = control_MPC(setpoint, getEncoderPosition());
         // control_action = setpoint;
-        // control_action = 1.0;
+        // control_action = MOTOR_MAX_VOLTAGE;
 
         // Serial.println(control_action);
         // Serial.println(setpoint);
-        // Serial.println(getEncoderPosition());
+        Serial.println(getEncoderPosition());
         // Serial.print("Meas: "); Serial.print(speed);
         // Serial.print(",Setpoint: "); Serial.println(setpoint);
-        Serial.println(speed);
+        // Serial.println(speed);
 
         if (abs(control_action) > MOTOR_MAX_VOLTAGE) {
             control_action = MOTOR_MAX_VOLTAGE * sgn(control_action);
