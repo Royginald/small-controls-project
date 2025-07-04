@@ -24,7 +24,7 @@ def setpoint(t):
     return 12
 
 
-port_number = 6
+port_number = 7
 file_name = "motor_data.csv"
 
 data = np.zeros((int(runtime/time_step), 3))
