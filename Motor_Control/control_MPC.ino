@@ -1,5 +1,5 @@
 #include "control_MPC.h"
-#include "Motor_test.h"
+#include "Motor_Control.h"
 
 // array printing function:
 // void MPC_Control::print_Array(float arr[], int N) {

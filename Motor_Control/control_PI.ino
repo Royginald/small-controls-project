@@ -1,6 +1,8 @@
 
+// --------------------------< Proportional Integrel Control >--------------------------
+
 #include "control_PI.h"
-#include "Motor_test.h"
+#include "Motor_Control.h"
 
 float control_PI(float r, float y) {
     float error = r - y;

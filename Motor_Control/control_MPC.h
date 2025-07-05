@@ -1,7 +1,7 @@
 #ifndef CONTROL_MPC_H
 #define CONTROL_MPC_H
 
-#include "Motor_test.h"
+#include "Motor_Control.h"
 
 namespace MPC_Control {
     // properties used in the MPC loop:

@@ -1,6 +1,8 @@
 
+// --------------------------< Proportional Integrel Dirivative Control >--------------------------
+
 #include "control_PID.h"
-#include "Motor_test.h"
+#include "Motor_Control.h"
 
 float control_PID(float r, float y) {
     float error = r - y;

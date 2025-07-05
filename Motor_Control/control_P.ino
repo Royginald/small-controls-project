@@ -1,4 +1,6 @@
 
+// --------------------------< Proportional Control >--------------------------
+
 #include "control_P.h"
 
 float control_P(float r, float y) {

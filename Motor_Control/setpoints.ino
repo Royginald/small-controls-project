@@ -1,4 +1,8 @@
 
+// --------------------------< Setpoints >--------------------------
+// 
+// This file contains a varity of different setpoint profiles
+
 #include "setpoints.h"
 
 float step(float time, double value) {
