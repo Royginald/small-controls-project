@@ -41,25 +41,19 @@ void setup() {
 void loop() {
     // if (Serial.available() > 0) {
     //     setpoint = Serial.readString().toFloat();
-    // }
-
-    // Calcualte the value of the setpoint based on the time since the program started
-    float program_time = float((micros() - prog_start_time)/1000000); // Runtime in seconds
-    setpoint = step(program_time, 1500.0);
-    // setpoint = sine(program_time, 0.01, 500.0) + 2000;
-    // setpoint = ramp(program_time, 50.0);
+    // }  
 
     // Find the time since the loop
-    dt = float((micros() - loop_start_time) / 1000000 ); // Time since last loop in seconds
+    dt = float((micros() - loop_start_time)); // Time since last loop in microseconds
 
-    // If the time since the last loop is greater then the time step, calcualte a new cotnrol action
-    if (dt > TIME_STEP) {
+    // If the time since the last loop is greater then the time step, calculate a new cotnrol action
+    if (dt > TIME_STEP * 1000000) {
         // Reset the loop timer
         loop_start_time = micros();
 
-        // Calcualte the current motor speed and position
-        speed = (getEncoderPosition() - prev_encoder_pos)*1000000.0/dt;
-        prev_encoder_pos = getEncoderPosition();
+        // Calculate the current motor speed
+        speed = (getEncoderPosition() - prev_encoder_pos)*1000000.0/dt; // Speed of motor, in steps per second
+        prev_encoder_pos = getEncoderPosition(); // Position of the motor, in steps
 
         // Find the angle of the motor shaft in degrees
         long send_pos = getEncoderPosition() % STEPS_PER_REVOLUTION; 
@@ -67,24 +61,67 @@ void loop() {
             send_pos += STEPS_PER_REVOLUTION;
         float motor_angle = float(send_pos) * 360. / STEPS_PER_REVOLUTION;
 
-        // Serial.println(int(float(send_pos) * 360. / STEPS_PER_REVOLUTION));
-        // Serial.println(getEncoderPosition());
-        // Serial.println(speed);
+        // Find the feedback based on the feedback type selected
+        #ifdef speed_feedback
+        float feedback = speed;
+        Serial.println(speed);
+        #endif
+
+        #ifdef position_feedback
+        float feedback = getEncoderPosition();
+        Serial.println(getEncoderPosition());
+        #endif
+
+        // Calcualte the value of the setpoint based on the time since the program started
+        float program_time = float((micros() - prog_start_time)/1000000.); // Runtime in seconds
+
+        #ifdef step_setpoint
+        setpoint = step(program_time, 1500.0);
+        #endif
+
+        #ifdef ramp_setpoint
+        setpoint = ramp(program_time, 30.0);
+        #endif
+
+        #ifdef sine_setpoint
+        setpoint = sine(program_time, 0.01, 500.0) + 2000;
+        #endif  
 
         // Based on the user selected control algorithum, the control action will be calculated
-        // control_action = control_P(setpoint, getEncoderPosition());
-        // control_action = control_PI(setpoint, getEncoderPosition());
-        control_action = control_PID(setpoint, getEncoderPosition());
-        // control_action = control_MPC(setpoint, getEncoderPosition());
-        // control_action = setpoint;
-        // control_action = MOTOR_MAX_VOLTAGE;
+        // The units of the control action are volts
+        #ifdef deadbeat_control
+        #endif
+
+        #ifdef MPC_control
+        control_action = control_MPC(setpoint, feedback);
+        #endif
+        
+        #ifdef PID_control
+        control_action = control_PID(setpoint, feedback);
+        #endif
+
+        #ifdef PI_control
+        control_action = control_PI(setpoint, feedback);
+        #endif
+
+        #ifdef P_control
+        control_action = control_P(setpoint, feedback);
+        #endif
+
+        #ifdef Fixed_voltage
+        control_action = 3;
+        #endif   
 
         // The process variable is printed out via the serial connection
         // Serial.println(control_action);
-        // Serial.println(setpoint);
-        Serial.println(getEncoderPosition());
+        // Serial.println(program_time);
+        // Serial.println(getEncoderPosition());
         // Serial.print("Meas: "); Serial.print(speed);
         // Serial.print(",Setpoint: "); Serial.println(setpoint);
+        // Serial.println(speed);
+
+        // Serial.println(int(float(send_pos) * 360. / STEPS_PER_REVOLUTION));
+        // Serial.println(getEncoderPosition());
         // Serial.println(speed);
 
         // Limit the control action if it is above the maximum voltage of the motor driver

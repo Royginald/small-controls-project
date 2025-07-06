@@ -23,7 +23,7 @@ max_speeds = np.zeros((num_files))
 rise_times = np.zeros((num_files))
 
 for i in range(min_voltage, max_voltage + 1):
-    file_name = "Motor Responses\motor_data_" + str(i) +"_volts.csv"
+    file_name = "motor_data_" + str(i) +"_volts.csv"
     data = []
     
     with open(file_name, "r", newline="\n") as file:
