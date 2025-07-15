@@ -15,9 +15,11 @@ Plant gain: 501.16 steps/s per volt
 Plant time constant: 0.16046 seconds
 
 For speed control (Where speed is measured in steps/s):
-- <img src="https://latex.codecogs.com/gif.latex?T(s) = \frac{501.16}{0.16046 s + 1}" /> 
+
+$T(s) = \frac{501.16}{0.16046 s + 1}$
 
 For position control (Where position is measured in steps):
-- <img src="https://latex.codecogs.com/gif.latex?T(s) = \frac{501.16}{s(0.16046 s + 1)}" /> 
+
+$T(s) = \frac{501.16}{s(0.16046 s + 1)}$
 
 The encoder has 1320 steps per revolution.
