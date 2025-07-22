@@ -6,15 +6,15 @@
 
 namespace PID_Control {
     #ifdef position_feedback
-    float K_p = 1;
-    float K_i = 1;
-    float K_d = 1;
+    float K_p = 0.012579263379904046;
+    float K_i = 0.012579263379904046;
+    float K_d = 0.003127464282863755;
     #endif
 
     #ifdef speed_feedback
-    float K_p = 1;
-    float K_i = 1;
-    float K_d = 1;
+    float K_p = 0.0012828366898020196;
+    float K_i = 0.004834878121977795;
+    float K_d = 0.0008351180335681176;
     #endif
 
     float error_sum = 0;

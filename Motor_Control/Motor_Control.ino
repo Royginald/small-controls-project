@@ -76,11 +76,11 @@ void loop() {
         float program_time = float((micros() - prog_start_time)/1000000.); // Runtime in seconds
 
         #ifdef step_setpoint
-        setpoint = step(program_time, 1500.0);
+        setpoint = step(program_time, 2500.0);
         #endif
 
         #ifdef ramp_setpoint
-        setpoint = ramp(program_time, 30.0);
+        setpoint = ramp(program_time, 80.0);
         #endif
 
         #ifdef sine_setpoint

@@ -8,13 +8,13 @@
 
 namespace PI_Control {
     #ifdef position_feedback
-    float K_p = 0.8;
-    float K_i = 0.5;
+    float K_p = 0.04239358625600699;
+    float K_i = 0.004261333802572665;
     #endif
 
     #ifdef speed_feedback
-    float K_p = 1;
-    float K_i = 1;
+    float K_p = 0.0005660467714901427;
+    float K_i = 0.010756669964191914;
     #endif
 
     float error_sum = 0;

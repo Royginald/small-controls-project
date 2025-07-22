@@ -6,11 +6,11 @@
 
 namespace P_Control {
     #ifdef position_feedback
-    float K_p = 0.15;
+    float K_p = 0.039907414797669405;
     #endif
 
     #ifdef speed_feedback
-    float K_p = 1;
+    float K_p = 0.037912044057785935;
     #endif
 
     float control_P(float r, float y);

@@ -15,10 +15,10 @@
 // #define Fixed_voltage
 
 // Note1: MPC control only works with speed feedback
-// Note2: Gains for P and PI control have only been calculated for position feedback
-// Note3: No gains for PID control have been calculated
+// Note2: PID with speed control needs some fine tuning
 
 // -------- Setpoint Type -------- 
+// Setpoint settings can be changed on line 78 of Motor_control.ino
 
 // #define step_setpoint
 #define ramp_setpoint
